@@ -55,55 +55,41 @@ public class XYInputDialog {
             mRoundOperation.setText(roundOperation + "");
         }
 
-//        mXYInput.setText("A1(2,10) A2(6,4) A3(7,5) B1(2,5) B2(5,8) B3(4,9) C1(8,4) C2(3,2) C3(1,2)");
-//        mClusterInput.setText("A1(2,10) B2(5,8) C3(1,2)");
-//        mRoundOperation.setText("1");
+        mOk.setOnClickListener(v -> {
+            xyInputModel = new ArrayList<>();
+            clusterInputModel = new ArrayList<>();
 
-        mOk.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                xyInputModel = new ArrayList<>();
-                clusterInputModel = new ArrayList<>();
+            String tmpXYInput = mXYInput.getText().toString();
+            String tmpClusterInput = mClusterInput.getText().toString();
+            String tmpRoundOperation = mRoundOperation.getText().toString();
 
-                String tmpXYInput = mXYInput.getText().toString();
-                String tmpClusterInput = mClusterInput.getText().toString();
-                String tmpRoundOperation = mRoundOperation.getText().toString();
+            boolean error_mode = false;
 
-                boolean error_mode = false;
-
-                if (!TextUtils.isEmpty(tmpXYInput)) {
-                    try {
-                        xyInputModel = convertToList(tmpXYInput);
-                    } catch (Exception e) {
-                        error_mode = true;
-                        setError(mXYInput, "Please enter correct input data type.");
-                    }
-                }
-                if (!TextUtils.isEmpty(tmpClusterInput)) {
-                    try {
-                        clusterInputModel = convertToList(tmpClusterInput);
-                    } catch (Exception e) {
-                        error_mode = true;
-                        setError(mClusterInput, "Please enter correct input data type.");
-                    }
-                }
-                if (!error_mode) {
-                    mAlert.dismiss();
-                    if (!TextUtils.isEmpty(tmpRoundOperation)) {
-                        EventBus.getDefault().post(new EventListener.InputEventListener(xyInputModel, clusterInputModel, convertInt(tmpRoundOperation), tmpXYInput, tmpClusterInput));
-                    } else
-                        EventBus.getDefault().post(new EventListener.InputEventListener(xyInputModel, clusterInputModel, 0, tmpXYInput, tmpClusterInput));
+            if (!TextUtils.isEmpty(tmpXYInput)) {
+                try {
+                    xyInputModel = convertToList(tmpXYInput);
+                } catch (Exception e) {
+                    error_mode = true;
+                    setError(mXYInput, "Please enter correct input data type.");
                 }
             }
-        });
-        mCancel.setOnClickListener(new View.OnClickListener()
-
-        {
-            @Override
-            public void onClick(View v) {
+            if (!TextUtils.isEmpty(tmpClusterInput)) {
+                try {
+                    clusterInputModel = convertToList(tmpClusterInput);
+                } catch (Exception e) {
+                    error_mode = true;
+                    setError(mClusterInput, "Please enter correct input data type.");
+                }
+            }
+            if (!error_mode) {
                 mAlert.dismiss();
+                if (!TextUtils.isEmpty(tmpRoundOperation)) {
+                    EventBus.getDefault().post(new EventListener.InputEventListener(xyInputModel, clusterInputModel, convertInt(tmpRoundOperation), tmpXYInput, tmpClusterInput));
+                } else
+                    EventBus.getDefault().post(new EventListener.InputEventListener(xyInputModel, clusterInputModel, 0, tmpXYInput, tmpClusterInput));
             }
         });
+        mCancel.setOnClickListener(v -> mAlert.dismiss());
         mAlert.show();
     }
 

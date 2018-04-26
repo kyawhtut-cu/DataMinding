@@ -114,19 +114,9 @@ public class HomeActivity extends AppCompatActivity {
 
         webView.getSettings().setJavaScriptEnabled(true);
 
-        mFab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mXyInputDialog.showDialog(HomeActivity.this, null, null, 0);
-            }
-        });
+        mFab.setOnClickListener(view -> mXyInputDialog.showDialog(HomeActivity.this, null, null, 0));
 
-        mCalculateBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                new CalculatingKMean().execute();
-            }
-        });
+        mCalculateBtn.setOnClickListener(v -> new CalculatingKMean().execute());
     }
 
     @Override
@@ -208,11 +198,11 @@ public class HomeActivity extends AppCompatActivity {
 
         for (int index = 0; index < round; index++) {
 
-            float[][] matrix = new float[mXYInputModel.size()][(mClusterInputModel.size() + 1)];
+            float[][] XYmatrix = new float[mXYInputModel.size()][(mClusterInputModel.size() + 1)];
 
-            int[] lastIndex = new int[mXYInputModel.size()];
+            int[] clusterGroup = new int[mXYInputModel.size()];
 
-            //calculate |x_2-x_1| + |y_2-y_1| and then insert to matrix
+            //calculate |x_2-x_1| + |y_2-y_1| and then insert to XYmatrix
             for (int row = 0; row < mXYInputModel.size(); row++) {
                 float x_1 = mXYInputModel.get(row).getX();
                 float y_1 = mXYInputModel.get(row).getY();
@@ -220,21 +210,21 @@ public class HomeActivity extends AppCompatActivity {
                     float x_2 = mClusterInputModel.get(col).getX();
                     float y_2 = mClusterInputModel.get(col).getY();
                     float result = Math.abs(x_2 - x_1) + Math.abs(y_2 - y_1);
-                    matrix[row][col] = result;
+                    XYmatrix[row][col] = result;
                 }
             }
 
-            //finding min number index each row and then insert index insert to last index of matrix
-            //insert index to lastIndex array
+            //finding min number index each row and then insert index insert to last index of XYmatrix
+            //insert index to clusterGroup array
             for (int row = 0; row < mXYInputModel.size(); row++) {
                 int tmpIndex = 0;
-                float tmpNo = matrix[row][0];
+                float tmpNo = XYmatrix[row][0];
                 for (int col = 0; col < mClusterInputModel.size(); col++) {
-                    tmpNo = (tmpNo > matrix[row][col]) ? matrix[row][col] : tmpNo;
-                    tmpIndex = (tmpNo == matrix[row][col]) ? col : tmpIndex;
+                    tmpNo = (tmpNo > XYmatrix[row][col]) ? XYmatrix[row][col] : tmpNo;
+                    tmpIndex = (tmpNo == XYmatrix[row][col]) ? col : tmpIndex;
                 }
-                matrix[row][mClusterInputModel.size()] = tmpIndex;
-                lastIndex[row] = tmpIndex;
+                XYmatrix[row][mClusterInputModel.size()] = tmpIndex;
+                clusterGroup[row] = tmpIndex;
             }
 
             //tmpClusterModel data change new cluster
@@ -248,14 +238,14 @@ public class HomeActivity extends AppCompatActivity {
                 oldCluster.add(new XYModel(old.getName(), old.getX(), old.getY()));
             }
             List<List<Integer>> clusterIndex = new ArrayList<>();
-            for (int row = 0; row < lastIndex.length; row++) {
+            for (int row = 0; row < clusterGroup.length; row++) {
                 //collection of equal index of index
                 List<Integer> tmpIndex = new ArrayList<>();
-                if (!check[lastIndex[row]]) {
+                if (!check[clusterGroup[row]]) {
                     //index is checked now
-                    check[lastIndex[row]] = true;
-                    for (int col = 0; col < lastIndex.length; col++) {
-                        if (lastIndex[row] == lastIndex[col]) {
+                    check[clusterGroup[row]] = true;
+                    for (int col = 0; col < clusterGroup.length; col++) {
+                        if (clusterGroup[row] == clusterGroup[col]) {
                             tmpIndex.add(col);
                         }
                     }
@@ -272,16 +262,16 @@ public class HomeActivity extends AppCompatActivity {
                     total_y /= total_count;
                     total_x = convertToDecimalParse(total_x, "#.##");
                     total_y = convertToDecimalParse(total_y, "#.##");
-                    mClusterInputModel.get(lastIndex[row]).setX(total_x);
-                    mClusterInputModel.get(lastIndex[row]).setY(total_y);
+                    mClusterInputModel.get(clusterGroup[row]).setX(total_x);
+                    mClusterInputModel.get(clusterGroup[row]).setY(total_y);
                 }
             }
-            //insert final result matrix and xy input
+            //insert final result XYmatrix and xy input
             List<XYModel> newCluster = new ArrayList<>();
             for (XYModel nCluster : mClusterInputModel) {
                 newCluster.add(new XYModel(nCluster.getName(), nCluster.getX(), nCluster.getY()));
             }
-            mResultModelList.add(new ResultModel(matrix, mXYInputModel, newCluster, oldCluster, clusterIndex));
+            mResultModelList.add(new ResultModel(XYmatrix, mXYInputModel, newCluster, oldCluster, clusterIndex));
         }
         String html = new Util.ConvertResultToHtml().getHtml(mResultModelList);
         return html;
