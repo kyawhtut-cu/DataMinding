@@ -1,4 +1,4 @@
-# DataMinding
+# DataMining
 
 To cluster point.
 In this program use K-mean Clustering and Manhattan Dstance.
@@ -16,6 +16,8 @@ Sample Center Point Input
   A2(6,4) A5(5,8) B1(2,5) C1(8,4) C4(4,9)
   
 Round Operation - 5
+
+Release apk - <a href="https://github.com/kyawhtut-cu/DataMinding/blob/master/app-release.apk">Click Here</a>
 
 <p align="center">
   <img src="https://i.pinimg.com/564x/03/f1/0f/03f10ff9b14e39bd6291d2cb63353634.jpg" width="350" alt="Point Input, Center Point and Round Operation Input"/><br>
